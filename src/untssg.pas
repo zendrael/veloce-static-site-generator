@@ -35,6 +35,7 @@ type
 			constructor Create;
 			destructor Destroy; override;
             //
+			procedure CreateStructure( strFileName: string );
             procedure Draft;
             procedure Update( strFileName: string );
 			procedure Publish;
@@ -89,6 +90,26 @@ begin
 	FindClose(SR);
 
     Config.Destroy;
+end;
+
+procedure TSSG.CreateStructure(strFileName: string);
+begin
+	 if strFileName = EmptyStr then
+     begin
+	 	  WriteLn('Folder name is empty. Please provide a name for the new site.');
+     end;
+
+	 //create folders
+	 if not DirectoryExists( strFileName ) then
+	 begin
+		CreateDir( strFileName );
+		CreateDir( strFileName + '/_catalogs' );
+		CreateDir( strFileName + '/_pages' );
+		CreateDir( strFileName + '/_posts' );
+		CreateDir( strFileName + '/_themes' );
+		CreateDir( strFileName + '/_exported' );
+		WriteLn('Site structure created.');
+	end;
 end;
 
 procedure TSSG.Update(strFileName: string);
