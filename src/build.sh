@@ -1,8 +1,8 @@
 #!/bin/sh
 
-# Yawara builder
+# Veloce builder
 
-fpc yawara.lpr -Os -CX -O3 -Ooregvar -Xg -Xs -XX \
+fpc veloce.lpr -Os -CX -O3 -Ooregvar -Xg -Xs -XX \
 -Fu../lib
 
 case "$1" in

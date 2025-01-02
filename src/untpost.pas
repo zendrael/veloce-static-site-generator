@@ -1,5 +1,5 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
-// Yawara static site generator
+// Veloce static site generator
 //   Static Site Generator unit
 //   POST generation
 // @author : Zendrael <zendrael@gmail.com>

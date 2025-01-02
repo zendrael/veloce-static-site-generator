@@ -1,11 +1,11 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
-// Yawara static site generator
+// Veloce static site generator
 //   web unit
 //   create web application
 // @author : Zendrael <zendrael@gmail.com>
 // @date   : 2013/10/20
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
-unit untWebYawara;
+unit untWebVeloce;
 
 {$mode objfpc}{$H+}
 
@@ -20,38 +20,38 @@ uses
 
 type
 
-	TYawaraWeb = Class( TCustomCGIApplication )
+	TVeloceWeb = Class( TCustomCGIApplication )
 		protected
 			function InitializeWebHandler: TWebHandler; override;
 		public
             //
 	end;
 
-	TYawaraCGIHandler = class(TCGIHandler)
+	TVeloceCGIHandler = class(TCGIHandler)
 		public
 			procedure HandleRequest(ARequest: TRequest; AResponse: TResponse); override;
 	end;
 
 implementation
 
-{ TYawaraWeb }
+{ TVeloceWeb }
 
-function TYawaraWeb.InitializeWebHandler: TWebHandler;
+function TVeloceWeb.InitializeWebHandler: TWebHandler;
 begin
-    Result := TYawaraCGIHandler.Create( Self );
+    Result := TVeloceCGIHandler.Create( Self );
 end;
 
 
-{ TYawaraCGIHandler }
+{ TVeloceCGIHandler }
 
-procedure TYawaraCGIHandler.HandleRequest(ARequest: TRequest;
+procedure TVeloceCGIHandler.HandleRequest(ARequest: TRequest;
 	AResponse: TResponse);
 begin
 	//handle requests
     AResponse.ContentType := 'text/html; charset=utf-8';
 
     //testing page
-    AResponse.Contents.Add('<h1>Yawara Web</h1>');
+    AResponse.Contents.Add('<h1>Veloce Web</h1>');
 
     //show header and menu
 
@@ -79,7 +79,7 @@ begin
 
         else
 			//AResponse.Contents.Add('Welcome!');
-            AResponse.Contents.LoadFromFile('../testes/yawara/webinterface/index.html');
+            AResponse.Contents.LoadFromFile('../testes/veloce/webinterface/index.html');
 	end;
 
 end;

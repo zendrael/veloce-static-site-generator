@@ -1,5 +1,5 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
-// Yawara static site generator
+// Veloce static site generator
 //   Static Site Generator unit
 //   create CMS functionalities
 // @author : Zendrael <zendrael@gmail.com>

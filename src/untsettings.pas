@@ -1,5 +1,5 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
-// Yawara static site generator
+// Veloce static site generator
 //   settings unit
 //   read and write settings
 // @author : Zendrael <zendrael@gmail.com>
@@ -102,7 +102,7 @@ implementation
 procedure TSettings.getConfig;
 begin
 	try
-		confFile:= TIniFile.Create('yawara.conf');
+		confFile:= TIniFile.Create('veloce.conf');
 
 		//setup directories
 		setPosts( confFile.ReadString('Global','Posts','') );

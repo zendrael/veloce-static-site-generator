@@ -1,11 +1,11 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
-// Yawara static site generator
+// Veloce static site generator
 //   console unit
 //   create console application
 // @author : Zendrael <zendrael@gmail.com>
 // @date   : 2013/10/20
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
-unit untConsoleYawara;
+unit untConsoleVeloce;
 
 {$mode objfpc}{$H+}
 
@@ -17,9 +17,9 @@ uses
     untSSG;
 
 type
-	TYawaraConsole = class( TCustomApplication )
+	TVeloceConsole = class( TCustomApplication )
 	protected
-    	{Config: TSetupYawara;
+    	{Config: TSetupVeloce;
     	strCatalogFiles, strCatalogTags: TStringList;  }
     	procedure DoRun; override;
 	public
@@ -50,7 +50,7 @@ type
 
 implementation
 
-procedure TYawaraConsole.DoRun;
+procedure TVeloceConsole.DoRun;
 var
   ErrorMsg: String;
   SSG : TSSG;
@@ -120,7 +120,7 @@ begin
 	if HasOption('u','update') then
     begin
 		{try
-			Config:= TSetupYawara.Create;
+			Config:= TSetupVeloce.Create;
 			Config.getConfig;
 
 			Atualizar( GetOptionValue('u', 'update') );
@@ -149,7 +149,7 @@ begin
     Exit;
 end;
 
-procedure TYawaraConsole.Help;
+procedure TVeloceConsole.Help;
 begin
 	WriteLn('Use as: ',ExeName,' [options]');
 	WriteLn('');
@@ -163,13 +163,13 @@ begin
 end;
 
 
-constructor TYawaraConsole.Create(TheOwner: TComponent);
+constructor TVeloceConsole.Create(TheOwner: TComponent);
 begin
 	inherited Create(TheOwner);
 	StopOnException:=True;
 end;
 
-destructor TYawaraConsole.Destroy;
+destructor TVeloceConsole.Destroy;
 begin
 	inherited Destroy;
 end;

@@ -1,9 +1,9 @@
-Yawara
+Veloce
 18/10/2014
 cms, estático, gerador, sites, blog
 
-<h2>O que é o Yawara?</h2>
-Yawara é um CMS (Content Management System) ou Sistema Gerenciador de Conteúdo <i>estático</i>. De uma maneira simples, podemos dizer que é um programa que auxilia a criar e gerenciar um site ou blog sem a necessidade de conhecimento técnico e sem uso de muitos recursos do servidor, como banco de dados ou linguagens dinâmicas.
+<h2>O que é o Veloce?</h2>
+Veloce é um CMS (Content Management System) ou Sistema Gerenciador de Conteúdo <i>estático</i>. De uma maneira simples, podemos dizer que é um programa que auxilia a criar e gerenciar um site ou blog sem a necessidade de conhecimento técnico e sem uso de muitos recursos do servidor, como banco de dados ou linguagens dinâmicas.
 
 <h2>Como Funciona?</h2>
 bla bla bla
@@ -30,9 +30,9 @@ bla bla bla
 bla bla bla 
 
 <h3>FAQ</h3>
-Algumas das questões mais interessantes sobre o Yawara:
+Algumas das questões mais interessantes sobre o Veloce:
 
-<b>O que significa Yawara?</b>
+<b>O que significa Veloce?</b>
 bla bla bla
 
 <b>Em que linguagem de programação ele é feito?</b>
