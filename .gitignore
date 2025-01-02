@@ -5,3 +5,5 @@
 *.compiled
 *.tmp
 *.dbg
+
+build/*
