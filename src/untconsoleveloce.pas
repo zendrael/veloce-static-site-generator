@@ -64,13 +64,11 @@ begin
 		║ = 186
 	*)
 	WriteLn('╔══════════════════════════════════════════════════════════════════════════════╗');
-	WriteLn('║   YAWARA                                                                     ║');
+	WriteLn('║   VELOCE                                                                     ║');
 	WriteLn('╚══════════════════════════════════════════════════════════════════════════════╝');
-    WriteLn(' Static Site and Blog Generator                                           v0.7b ');
+    WriteLn(' Static Site and Blog Generator                                           v0.8b ');
     WriteLn('--------------------------------------------------------------------------------');
     WriteLn('');
-
-	//WriteLn('YAWARA - Static Site Generator - v0.6b');
     WriteLn('');
 
 	{
@@ -91,6 +89,19 @@ begin
 	end;
 
 	// lendo parâmetros
+	if HasOption('c','create') then
+    begin
+		try
+            SSG := TSSG.Create;
+            SSG.Draft;//( GetOptionValue('c', 'create') )
+		finally
+			FreeAndNil( SSG );
+		end;
+
+		Terminate;
+		Exit;
+	end;
+
 	if HasOption('d','draft') then
     begin
 		try
@@ -151,9 +162,11 @@ end;
 
 procedure TVeloceConsole.Help;
 begin
-	WriteLn('Use as: ',ExeName,' [options]');
+	// WriteLn('Use as: ',ExeName,' [options]');
+	WriteLn('Use as: veloce [options]');
 	WriteLn('');
-	WriteLn('Commands:');
+	WriteLn('Options:');
+	WriteLn('  -c [foldername]' + #9 + ' Create site folder structure');
 	WriteLn('  -d [file]' + #9 + ' Create drafs for all posts or single files');
 	WriteLn('  -p' + #9#9 + ' Publish all posts');
 	WriteLn('  -u [file]' + #9 + ' Update some file or post');

@@ -1,0 +1,7 @@
+*.a
+*.o
+*.ppu
+*.or
+*.compiled
+*.tmp
+*.dbg

@@ -2,7 +2,7 @@
 
 # Veloce builder
 
-fpc veloce.lpr -Os -CX -O3 -Ooregvar -Xg -Xs -XX \
+fpc veloce.pas -Os -CX -O3 -Ooregvar -Xg -Xs -XX \
 -Fu../lib
 
 case "$1" in
