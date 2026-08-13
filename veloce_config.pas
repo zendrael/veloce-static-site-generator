@@ -15,6 +15,7 @@ type
     Author: string;
     Language: string;
     Theme: string;
+    BlogPostsPerPage: Integer;
   end;
 
 function LoadConfig(const FileName: string): TVeloceConfig;
@@ -34,6 +35,7 @@ begin
   Result.Author := '';
   Result.Language := 'pt-BR';
   Result.Theme := 'default';
+  Result.BlogPostsPerPage := 10;
 
   if not FileExists(FileName) then Exit;
 
@@ -59,7 +61,13 @@ begin
         else if Key = 'url' then Result.URL := Value
         else if Key = 'author' then Result.Author := Value
         else if Key = 'language' then Result.Language := Value
-        else if Key = 'theme' then Result.Theme := Value;
+        else if Key = 'theme' then Result.Theme := Value
+        else if (Key = 'blog_posts_per_page') or (Key = 'posts_per_page') then
+        begin
+          Result.BlogPostsPerPage := StrToIntDef(Value, 10);
+          if Result.BlogPostsPerPage < 1 then
+            Result.BlogPostsPerPage := 10;
+        end;
       end;
     end;
   finally

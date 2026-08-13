@@ -75,6 +75,7 @@ meu-site/
 | Comando | Descrição |
 |---------|-----------|
 | `veloce init <nome>` | Cria um novo site com estrutura padrão |
+| `veloce post <titulo>` | Cria um novo post em `content/blog/` |
 | `veloce build` | Gera o site em `dist/` (modo produção) |
 | `veloce dev` | Gera o site em `dev/` (modo desenvolvimento) |
 | `veloce clean` | Remove `dist/` e `dev/` |
@@ -88,6 +89,9 @@ meu-site/
 # Criar um novo blog
 veloce init meu-blog
 cd meu-blog
+
+# Criar um post
+veloce post "Meu segundo post"
 
 # Desenvolver (gera em dev/)
 veloce dev
@@ -103,6 +107,19 @@ veloce build
 
 # O site pronto está em dist/
 ```
+
+### Páginas vs Posts
+
+- Arquivos em `content/` (fora de `content/blog/`) são tratados como páginas.
+- Arquivos em `content/blog/` são tratados como posts e geram URL amigável:
+  - `content/blog/meu-post.md` → `dist/blog/meu-post/index.html`
+- O índice do blog é gerado automaticamente no build:
+  - `dist/blog/index.html` sempre inclui links para todos os posts.
+- Paginação automática no índice do blog (10 posts por página por padrão).
+- Se existir `templates/post.html`, ele será usado para posts.
+- Se existir `templates/page.html`, ele será usado para páginas.
+- Se existir `templates/blog.html`, ele será usado para o índice do blog.
+- Fallback padrão continua sendo `templates/base.html`.
 
 ---
 
@@ -180,6 +197,7 @@ description = "Blog sobre tecnologia e programação"
 url = "https://meublog.com"
 author = "João Silva"
 language = "pt-BR"
+blog_posts_per_page = 10
 ```
 
 ---

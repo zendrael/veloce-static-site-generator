@@ -18,6 +18,7 @@ begin
   WriteLn('');
   WriteLn('  Comandos:');
   WriteLn('    init [nome]   Cria um novo site com estrutura padrão');
+  WriteLn('    post <título> Cria um novo post em content/blog/');
   WriteLn('    build         Gera o site em modo produção (pasta dist/)');
   WriteLn('    dev           Gera o site em modo desenvolvimento (pasta dev/)');
   WriteLn('    clean         Remove as pastas dist/ e dev/');
@@ -26,16 +27,118 @@ begin
   WriteLn('  Exemplos:');
   WriteLn('    veloce init meu-blog');
   WriteLn('    cd meu-blog');
+  WriteLn('    veloce post "Meu Primeiro Post"');
   WriteLn('    veloce dev');
   WriteLn('    veloce build');
+  WriteLn('');
+end;
+
+function GetJoinedArgs(const StartIndex: Integer): string;
+var
+  I: Integer;
+begin
+  Result := '';
+  for I := StartIndex to ParamCount do
+  begin
+    if Result <> '' then
+      Result := Result + ' ';
+    Result := Result + ParamStr(I);
+  end;
+end;
+
+function Slugify(const S: string): string;
+var
+  I: Integer;
+  C: Char;
+  Lowered: string;
+begin
+  Lowered := LowerCase(S);
+  Result := '';
+  for I := 1 to Length(Lowered) do
+  begin
+    C := Lowered[I];
+    if ((C >= 'a') and (C <= 'z')) or ((C >= '0') and (C <= '9')) then
+      Result := Result + C
+    else if (C = ' ') or (C = '-') or (C = '_') or (C = '.') then
+    begin
+      if (Result = '') or (Result[Length(Result)] <> '-') then
+        Result := Result + '-';
+    end;
+  end;
+
+  while (Length(Result) > 0) and (Result[1] = '-') do
+    Delete(Result, 1, 1);
+  while (Length(Result) > 0) and (Result[Length(Result)] = '-') do
+    Delete(Result, Length(Result), 1);
+
+  if Result = '' then
+    Result := 'novo-post';
+end;
+
+procedure CmdPost(const Title: string);
+var
+  SiteDir, ContentDir, BlogDir: string;
+  BaseName, FileName, FullPath: string;
+  PostContent: string;
+  PostDate: string;
+  Suffix: Integer;
+begin
+  if TrimString(Title) = '' then
+  begin
+    WriteLn('Erro: informe o título do post.');
+    WriteLn('Uso: veloce post <título>');
+    Exit;
+  end;
+
+  SiteDir := GetCurrentDir;
+  ContentDir := SiteDir + DirectorySeparator + 'content';
+  BlogDir := ContentDir + DirectorySeparator + 'blog';
+
+  if not FileExists(SiteDir + DirectorySeparator + 'veloce.toml') then
+  begin
+    WriteLn('Erro: execute este comando na raiz de um projeto Veloce.');
+    Exit;
+  end;
+
+  ForceDirectories(BlogDir);
+
+  PostDate := FormatDateTime('yyyy-mm-dd', Date);
+  BaseName := PostDate + '-' + Slugify(Title);
+  FileName := BaseName + '.md';
+  FullPath := BlogDir + DirectorySeparator + FileName;
+
+  Suffix := 2;
+  while FileExists(FullPath) do
+  begin
+    FileName := BaseName + '-' + IntToStr(Suffix) + '.md';
+    FullPath := BlogDir + DirectorySeparator + FileName;
+    Inc(Suffix);
+  end;
+
+  PostContent := '---' + LineEnding +
+                 'title: "' + Title + '"' + LineEnding +
+                 'description: ""' + LineEnding +
+                 'date: "' + PostDate + '"' + LineEnding +
+                 'type: "post"' + LineEnding +
+                 '---' + LineEnding +
+                 LineEnding +
+                 '# ' + Title + LineEnding +
+                 LineEnding +
+                 'Escreva seu conteúdo em Markdown aqui.' + LineEnding;
+
+  StringToFile(FullPath, PostContent);
+
+  WriteLn('');
+  WriteLn('Post criado com sucesso!');
+  WriteLn('  ', FullPath);
   WriteLn('');
 end;
 
 procedure CmdInit(const SiteName: string);
 var
   SiteDir, ContentDir, TemplatesDir, PartialsDir, StaticDir: string;
-  ConfigContent, IndexContent, PostContent: string;
-  BaseTemplate, HeaderPartial, FooterPartial, NavPartial: string;
+  ConfigContent, IndexContent, BlogIndexContent, PostContent: string;
+  BaseTemplate, PostTemplate, HeaderPartial, FooterPartial, NavPartial: string;
   StyleCSS: string;
 begin
   if SiteName = '' then
@@ -74,7 +177,8 @@ begin
                    'description = "Um site incrível gerado com Veloce"' + LineEnding +
                    'url = "https://exemplo.com"' + LineEnding +
                    'author = "Seu Nome"' + LineEnding +
-                   'language = "pt-BR"' + LineEnding;
+                   'language = "pt-BR"' + LineEnding +
+                   'blog_posts_per_page = 10' + LineEnding;
   StringToFile(SiteDir + DirectorySeparator + 'veloce.toml', ConfigContent);
 
   // Templates
@@ -89,7 +193,7 @@ begin
   NavPartial := '<nav class="site-nav">' + LineEnding +
                 '  <a href="/">Início</a>' + LineEnding +
                 '  <a href="/about.html">Sobre</a>' + LineEnding +
-                '  <a href="/blog/">Blog</a>' + LineEnding +
+                '  <a href="/blog/index.html">Blog</a>' + LineEnding +
                 '</nav>';
   StringToFile(PartialsDir + DirectorySeparator + 'nav.html', NavPartial);
 
@@ -121,6 +225,27 @@ begin
                   '</html>';
   StringToFile(TemplatesDir + DirectorySeparator + 'base.html', BaseTemplate);
 
+  PostTemplate := '<!DOCTYPE html>' + LineEnding +
+                  '<html lang="{{site.language}}">' + LineEnding +
+                  '<head>' + LineEnding +
+                  '  <meta charset="UTF-8">' + LineEnding +
+                  '  <meta name="viewport" content="width=device-width, initial-scale=1.0">' + LineEnding +
+                  '  <title>{{title}} | {{site.title}}</title>' + LineEnding +
+                  '  <meta name="description" content="{{description}}">' + LineEnding +
+                  '  <link rel="stylesheet" href="/css/style.css">' + LineEnding +
+                  '</head>' + LineEnding +
+                  '<body>' + LineEnding +
+                  '  {{> partials/header.html}}' + LineEnding +
+                  '  <main class="site-main">' + LineEnding +
+                  '    <article class="post container">' + LineEnding +
+                  '      {{content}}' + LineEnding +
+                  '    </article>' + LineEnding +
+                  '  </main>' + LineEnding +
+                  '  {{> partials/footer.html}}' + LineEnding +
+                  '</body>' + LineEnding +
+                  '</html>';
+  StringToFile(TemplatesDir + DirectorySeparator + 'post.html', PostTemplate);
+
   // Conteúdo
   IndexContent := '---' + LineEnding +
                   'title: "Bem-vindo"' + LineEnding +
@@ -140,6 +265,16 @@ begin
                   LineEnding +
                   'Comece editando os arquivos na pasta `content/`!';
   StringToFile(ContentDir + DirectorySeparator + 'index.md', IndexContent);
+
+  BlogIndexContent := '---' + LineEnding +
+                      'title: "Blog"' + LineEnding +
+                      'description: "Lista de posts"' + LineEnding +
+                      '---' + LineEnding +
+                      LineEnding +
+                      '# Blog' + LineEnding +
+                      LineEnding +
+                      '- [Primeiro Post](/blog/primeiro-post/)' + LineEnding;
+  StringToFile(ContentDir + DirectorySeparator + 'blog' + DirectorySeparator + 'index.md', BlogIndexContent);
 
   PostContent := '---' + LineEnding +
                  'title: "Primeiro Post"' + LineEnding +
@@ -186,10 +321,12 @@ begin
 
   WriteLn('  ✓ veloce.toml');
   WriteLn('  ✓ templates/base.html');
+  WriteLn('  ✓ templates/post.html');
   WriteLn('  ✓ templates/partials/header.html');
   WriteLn('  ✓ templates/partials/nav.html');
   WriteLn('  ✓ templates/partials/footer.html');
   WriteLn('  ✓ content/index.md');
+  WriteLn('  ✓ content/blog/index.md');
   WriteLn('  ✓ content/blog/primeiro-post.md');
   WriteLn('  ✓ static/css/style.css');
   WriteLn('');
@@ -245,7 +382,7 @@ begin
 end;
 
 var
-  Command, Arg: string;
+  Command: string;
 begin
   if ParamCount < 1 then
   begin
@@ -262,6 +399,8 @@ begin
     else
       CmdInit('');
   end
+  else if Command = 'post' then
+    CmdPost(GetJoinedArgs(2))
   else if Command = 'build' then
     CmdBuild
   else if Command = 'dev' then
