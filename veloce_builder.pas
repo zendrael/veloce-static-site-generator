@@ -95,11 +95,12 @@ begin
     Result := '';
 end;
 
-procedure ProcessContentFile(const FileName, TemplatesDir, OutDir, BaseURL: string; 
-  const Config: TVeloceConfig; IsDev: Boolean);
+procedure ProcessContentFile(const FileName, TemplatesDir, OutDir, BaseURL: string;
+  const Config: TVeloceConfig; IsDev: Boolean; const RootContentDir: string);
 var
   Content, HTML, Rendered, FrontMatterTitle, FrontMatterDesc: string;
   OutFileName, RelPath, OutPath, TemplatePath: string;
+  FullFileName, FullRootDir: string;
   IsMarkdown: Boolean;
 begin
   Content := FileToString(FileName);
@@ -119,9 +120,13 @@ begin
 
   Rendered := RenderTemplate(TemplatePath, HTML, Config, FrontMatterTitle, FrontMatterDesc);
 
-  RelPath := ExtractFilePath(FileName);
-  if StartsWithStr(RelPath, 'content' + DirectorySeparator) then
-    RelPath := Copy(RelPath, Length('content') + 2, Length(RelPath));
+  FullFileName := ExpandFileName(FileName);
+  FullRootDir := IncludeTrailingPathDelimiter(ExpandFileName(RootContentDir));
+  RelPath := ExtractFilePath(FullFileName);
+  if StartsWithStr(RelPath, FullRootDir) then
+    RelPath := Copy(RelPath, Length(FullRootDir) + 1, Length(RelPath))
+  else
+    RelPath := '';
 
   OutFileName := ChangeFileExt(ExtractFileName(FileName), '.html');
   OutPath := OutDir + DirectorySeparator + RelPath + OutFileName;
@@ -169,7 +174,7 @@ begin
   begin
     repeat
       FileName := ContentDir + DirectorySeparator + SR.Name;
-      ProcessContentFile(FileName, TemplatesDir, OutDir, Config.URL, Config, IsDev);
+      ProcessContentFile(FileName, TemplatesDir, OutDir, Config.URL, Config, IsDev, ContentDir);
     until FindNext(SR) <> 0;
     FindClose(SR);
   end;
@@ -179,7 +184,7 @@ begin
   begin
     repeat
       FileName := ContentDir + DirectorySeparator + SR.Name;
-      ProcessContentFile(FileName, TemplatesDir, OutDir, Config.URL, Config, IsDev);
+      ProcessContentFile(FileName, TemplatesDir, OutDir, Config.URL, Config, IsDev, ContentDir);
     until FindNext(SR) <> 0;
     FindClose(SR);
   end;
@@ -224,7 +229,7 @@ begin
   begin
     repeat
       FileName := Dir + DirectorySeparator + SR.Name;
-      ProcessContentFile(FileName, TemplatesDir, OutDir, BaseURL, Config, IsDev);
+      ProcessContentFile(FileName, TemplatesDir, OutDir, BaseURL, Config, IsDev, RootContentDir);
     until FindNext(SR) <> 0;
     FindClose(SR);
   end;
@@ -234,7 +239,7 @@ begin
   begin
     repeat
       FileName := Dir + DirectorySeparator + SR.Name;
-      ProcessContentFile(FileName, TemplatesDir, OutDir, BaseURL, Config, IsDev);
+      ProcessContentFile(FileName, TemplatesDir, OutDir, BaseURL, Config, IsDev, RootContentDir);
     until FindNext(SR) <> 0;
     FindClose(SR);
   end;
