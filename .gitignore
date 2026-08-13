@@ -7,3 +7,29 @@
 *.dbg
 
 build/*
+
+# Project output directories
+dist/
+dev/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# Generic editor/temp files
+*.swp
+*.swo
+*.bak
+*.temp
+*.log
