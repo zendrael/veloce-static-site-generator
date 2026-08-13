@@ -21,6 +21,23 @@ function EnsureDir(const Dir: string): string;
 
 implementation
 
+procedure CopyFileOverwrite(const SrcFile, DstFile: string);
+var
+  SrcStream, DstStream: TFileStream;
+begin
+  SrcStream := TFileStream.Create(SrcFile, fmOpenRead or fmShareDenyWrite);
+  try
+    DstStream := TFileStream.Create(DstFile, fmCreate);
+    try
+      DstStream.CopyFrom(SrcStream, 0);
+    finally
+      DstStream.Free;
+    end;
+  finally
+    SrcStream.Free;
+  end;
+end;
+
 function FileToString(const FileName: string): string;
 var
   SL: TStringList;
@@ -95,7 +112,7 @@ begin
       else
       begin
         ForceDirectories(ExtractFilePath(DstFile));
-        CopyFile(SrcFile, DstFile, [cffOverwriteFile]);
+        CopyFileOverwrite(SrcFile, DstFile);
       end;
     until FindNext(SR) <> 0;
     FindClose(SR);

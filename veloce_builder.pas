@@ -143,7 +143,10 @@ begin
   WriteLn('');
   WriteLn('========================================');
   WriteLn('  VELOCE - Static Site Generator');
-  WriteLn('  Modo: ', IfThen(IsDev, 'DESENVOLVIMENTO', 'PRODUÇÃO'));
+  if IsDev then
+    WriteLn('  Modo: DESENVOLVIMENTO')
+  else
+    WriteLn('  Modo: PRODUÇÃO');
   WriteLn('========================================');
   WriteLn('');
 

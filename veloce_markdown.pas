@@ -5,7 +5,7 @@ unit veloce_markdown;
 interface
 
 uses
-  Classes, SysUtils, veloce_utils;
+  Classes, SysUtils, StrUtils, veloce_utils;
 
 function MarkdownToHTML(const MD: string): string;
 
@@ -14,7 +14,7 @@ implementation
 function ProcessInline(const Line: string): string;
 var
   S: string;
-  i, j: Integer;
+  i, j, k: Integer;
   Prefix, Suffix, Inner, URL, Text, Alt: string;
 begin
   S := Line;

@@ -5,15 +5,12 @@ unit veloce_template;
 interface
 
 uses
-  Classes, SysUtils, veloce_utils;
+  Classes, SysUtils, veloce_utils, veloce_config;
 
 function RenderTemplate(const TemplatePath, Content: string; 
   const Config: TVeloceConfig; const Title, Description: string): string;
 
 implementation
-
-uses
-  veloce_config;
 
 function ProcessIncludes(var Tpl: string; const BasePath: string): string;
 var
