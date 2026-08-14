@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="{{site.language}}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}} | {{site.title}}</title>
+  <meta name="description" content="{{description}}">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="page-backdrop" aria-hidden="true"></div>
+
+  {{> partials/header.html}}
+
+  <main class="site-main">
+    <article class="post container">
+      {{content}}
+    </article>
+  </main>
+
+  {{> partials/footer.html}}
+</body>
+</html>

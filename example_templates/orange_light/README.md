@@ -1,0 +1,35 @@
+# orange_light
+
+Responsive theme pack for Veloce with a warm light-orange visual style.
+
+## Structure
+
+- templates/base.html
+- templates/post.html
+- templates/blog.html
+- templates/partials/header.html
+- templates/partials/nav.html
+- templates/partials/footer.html
+- static/css/style.css
+
+## Apply to a site
+
+From your site root:
+
+```bash
+cp -R ../example_templates/orange_light/templates/* templates/
+cp -R ../example_templates/orange_light/templates/partials/* templates/partials/
+cp ../example_templates/orange_light/static/css/style.css static/css/style.css
+```
+
+Then run:
+
+```bash
+../veloce build
+```
+
+## Maintenance notes
+
+- Palette, spacing, radii, and shadows are centralized in `:root` CSS variables.
+- Keep semantic template files (`base`, `post`, `blog`) separate for easier edits.
+- Add any page-specific styles at the bottom of `static/css/style.css`.

@@ -163,6 +163,45 @@ Texto em **Markdown** com todos os recursos.
 {{> partials/footer.html}}
 ```
 
+## 🎭 Temas (Themes)
+
+O Veloce pode trocar de tema apenas substituindo arquivos de `templates/` e `static/css/style.css`.
+
+### Temas de exemplo disponíveis
+
+- `example_templates/orange_dark`
+- `example_templates/orange_light`
+
+### Como instalar um tema
+
+Execute na raiz do seu site (ex: `meu-blog/`):
+
+```bash
+# Exemplo: instalar orange_dark
+cp -R ../example_templates/orange_dark/templates/* templates/
+cp -R ../example_templates/orange_dark/templates/partials/* templates/partials/
+cp ../example_templates/orange_dark/static/css/style.css static/css/style.css
+
+# Rebuild
+../veloce build
+```
+
+Para instalar `orange_light`, troque `orange_dark` por `orange_light` nos comandos acima.
+
+### Como trocar de tema depois
+
+1. Copie os arquivos do tema novo para `templates/` e `static/css/style.css`.
+2. Rode `veloce build` (ou `../veloce build` se estiver usando o binário local).
+3. Abra `dist/` e valide o resultado.
+
+Cada tema já inclui:
+
+- `templates/base.html`
+- `templates/post.html`
+- `templates/blog.html`
+- `templates/partials/*`
+- `static/css/style.css`
+
 ### Template base padrão
 
 ```html

@@ -1,0 +1,9 @@
+# Optional values you can copy into your site's veloce.toml
+# and tweak as needed.
+
+title = "My Site"
+description = "A Veloce site using orange_light"
+url = "https://example.com"
+author = "Your Name"
+language = "en-US"
+blog_posts_per_page = 10
