@@ -28,6 +28,24 @@ Then run:
 ../veloce build
 ```
 
+## Quick switch to another theme
+
+You can switch from this theme to `orange_light` by replacing `templates/` and `static/css/style.css`:
+
+```bash
+cp -R ../example_templates/orange_light/templates/* templates/
+cp -R ../example_templates/orange_light/templates/partials/* templates/partials/
+cp ../example_templates/orange_light/static/css/style.css static/css/style.css
+```
+
+Then rebuild:
+
+```bash
+veloce build
+# or, if using the local binary:
+../veloce build
+```
+
 ## Maintenance notes
 
 - Palette, spacing, radii, and shadows are centralized in `:root` CSS variables.
