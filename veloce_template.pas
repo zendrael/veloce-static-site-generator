@@ -8,7 +8,8 @@ uses
   Classes, SysUtils, veloce_utils, veloce_config;
 
 function RenderTemplate(const TemplatePath, Content: string; 
-  const Config: TVeloceConfig; const Title, Description: string): string;
+  const Config: TVeloceConfig; const Title, Description: string;
+  const FrontMatterVars: TStringList = nil): string;
 
 implementation
 
@@ -35,11 +36,14 @@ begin
   end;
 end;
 
-function RenderTemplate(const TemplatePath, Content: string; 
-  const Config: TVeloceConfig; const Title, Description: string): string;
+function RenderTemplate(const TemplatePath, Content: string;
+  const Config: TVeloceConfig; const Title, Description: string;
+  const FrontMatterVars: TStringList): string;
 var
   Tpl: string;
   BasePath: string;
+  i: Integer;
+  Key, Value: string;
 begin
   if FileExists(TemplatePath) then
     Tpl := FileToString(TemplatePath)
@@ -60,6 +64,17 @@ begin
   Tpl := ReplaceAll(Tpl, '{{site.url}}', Config.URL);
   Tpl := ReplaceAll(Tpl, '{{site.author}}', Config.Author);
   Tpl := ReplaceAll(Tpl, '{{site.language}}', Config.Language);
+
+  if Assigned(FrontMatterVars) then
+  begin
+    for i := 0 to FrontMatterVars.Count - 1 do
+    begin
+      Key := TrimString(FrontMatterVars.Names[i]);
+      if Key = '' then Continue;
+      Value := FrontMatterVars.ValueFromIndex[i];
+      Tpl := ReplaceAll(Tpl, '{{' + Key + '}}', Value);
+    end;
+  end;
 
   Result := Tpl;
 end;

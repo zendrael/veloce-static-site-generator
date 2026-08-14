@@ -261,7 +261,25 @@ begin
   end;
 end;
 
-function ExtractFrontMatter(const Content: string; out Title, Description: string): string;
+function ReplaceContentVariables(const Content: string; const FrontMatterVars: TStringList): string;
+var
+  i: Integer;
+  Key, Value: string;
+begin
+  Result := Content;
+  if not Assigned(FrontMatterVars) then Exit;
+
+  for i := 0 to FrontMatterVars.Count - 1 do
+  begin
+    Key := TrimString(FrontMatterVars.Names[i]);
+    if Key = '' then Continue;
+    Value := FrontMatterVars.ValueFromIndex[i];
+    Result := ReplaceAll(Result, '{{' + Key + '}}', Value);
+  end;
+end;
+
+function ExtractFrontMatter(const Content: string; out Title, Description: string;
+  const FrontMatterVars: TStringList): string;
 var
   SL: TStringList;
   i, j: Integer;
@@ -271,6 +289,12 @@ begin
   Title := '';
   Description := '';
   Result := Content;
+
+  if Assigned(FrontMatterVars) then
+  begin
+    FrontMatterVars.Clear;
+    FrontMatterVars.NameValueSeparator := '=';
+  end;
 
   SL := TStringList.Create;
   try
@@ -295,6 +319,14 @@ begin
             Value := Copy(Value, 2, Length(Value) - 2);
           if Key = 'title' then Title := Value
           else if Key = 'description' then Description := Value;
+
+          if Assigned(FrontMatterVars) then
+          begin
+            if FrontMatterVars.IndexOfName(Key) >= 0 then
+              FrontMatterVars.Values[Key] := Value
+            else
+              FrontMatterVars.Add(Key + '=' + Value);
+          end;
         end;
       end;
       if j > 0 then
@@ -357,61 +389,79 @@ var
   IsMarkdown: Boolean;
   IsBlogPost: Boolean;
   SlugPath: string;
+  FrontMatterVars: TStringList;
 begin
   Content := FileToString(FileName);
 
-  HTML := ExtractFrontMatter(Content, FrontMatterTitle, FrontMatterDesc);
+  FrontMatterVars := TStringList.Create;
+  try
+    HTML := ExtractFrontMatter(Content, FrontMatterTitle, FrontMatterDesc, FrontMatterVars);
 
-  if FrontMatterTitle = '' then
-    FrontMatterTitle := ExtractFileNameNoExt(FileName);
+    if FrontMatterTitle = '' then
+      FrontMatterTitle := ExtractFileNameNoExt(FileName);
 
-  IsMarkdown := SameText(ExtractFileExt(FileName), '.md');
-  if IsMarkdown then
-    HTML := MarkdownToHTML(HTML)
-  else
-    HTML := HTML;
+    if FrontMatterVars.IndexOfName('title') < 0 then
+      FrontMatterVars.Add('title=' + FrontMatterTitle)
+    else
+      FrontMatterVars.Values['title'] := FrontMatterTitle;
 
-  TemplatePath := GetTemplateForFile(FileName, TemplatesDir);
+    if FrontMatterVars.IndexOfName('description') < 0 then
+      FrontMatterVars.Add('description=' + FrontMatterDesc)
+    else
+      FrontMatterVars.Values['description'] := FrontMatterDesc;
 
-  FullFileName := ExpandFileName(FileName);
-  FullRootDir := IncludeTrailingPathDelimiter(ExpandFileName(RootContentDir));
-  RelPath := ExtractFilePath(FullFileName);
-  if StartsWithStr(RelPath, FullRootDir) then
-    RelPath := Copy(RelPath, Length(FullRootDir) + 1, Length(RelPath))
-  else
-    RelPath := '';
+    HTML := ReplaceContentVariables(HTML, FrontMatterVars);
 
-  IsBlogPost := IsBlogPostFile(RelPath + ExtractFileName(FileName)) and
-                (not SameText(ExtractFileNameNoExt(FileName), 'index'));
+    IsMarkdown := SameText(ExtractFileExt(FileName), '.md');
+    if IsMarkdown then
+      HTML := MarkdownToHTML(HTML)
+    else
+      HTML := HTML;
 
-  if IsBlogPost then
-  begin
-    PostTemplate := TemplatesDir + DirectorySeparator + 'post.html';
-    if FileExists(PostTemplate) then
-      TemplatePath := PostTemplate;
-  end
-  else
-  begin
-    PageTemplate := TemplatesDir + DirectorySeparator + 'page.html';
-    if FileExists(PageTemplate) then
-      TemplatePath := PageTemplate;
+    TemplatePath := GetTemplateForFile(FileName, TemplatesDir);
+
+    FullFileName := ExpandFileName(FileName);
+    FullRootDir := IncludeTrailingPathDelimiter(ExpandFileName(RootContentDir));
+    RelPath := ExtractFilePath(FullFileName);
+    if StartsWithStr(RelPath, FullRootDir) then
+      RelPath := Copy(RelPath, Length(FullRootDir) + 1, Length(RelPath))
+    else
+      RelPath := '';
+
+    IsBlogPost := IsBlogPostFile(RelPath + ExtractFileName(FileName)) and
+                  (not SameText(ExtractFileNameNoExt(FileName), 'index'));
+
+    if IsBlogPost then
+    begin
+      PostTemplate := TemplatesDir + DirectorySeparator + 'post.html';
+      if FileExists(PostTemplate) then
+        TemplatePath := PostTemplate;
+    end
+    else
+    begin
+      PageTemplate := TemplatesDir + DirectorySeparator + 'page.html';
+      if FileExists(PageTemplate) then
+        TemplatePath := PageTemplate;
+    end;
+
+    Rendered := RenderTemplate(TemplatePath, HTML, Config, FrontMatterTitle, FrontMatterDesc, FrontMatterVars);
+
+    OutFileName := ChangeFileExt(ExtractFileName(FileName), '.html');
+    if IsBlogPost then
+    begin
+      SlugPath := ChangeFileExt(RelPath + ExtractFileName(FileName), '');
+      OutPath := OutDir + DirectorySeparator + SlugPath + DirectorySeparator + 'index.html';
+    end
+    else
+      OutPath := OutDir + DirectorySeparator + RelPath + OutFileName;
+
+    ForceDirectories(ExtractFilePath(OutPath));
+    StringToFile(OutPath, Rendered);
+
+    WriteLn('  [BUILD] ', FileName, ' -> ', OutPath);
+  finally
+    FrontMatterVars.Free;
   end;
-
-  Rendered := RenderTemplate(TemplatePath, HTML, Config, FrontMatterTitle, FrontMatterDesc);
-
-  OutFileName := ChangeFileExt(ExtractFileName(FileName), '.html');
-  if IsBlogPost then
-  begin
-    SlugPath := ChangeFileExt(RelPath + ExtractFileName(FileName), '');
-    OutPath := OutDir + DirectorySeparator + SlugPath + DirectorySeparator + 'index.html';
-  end
-  else
-    OutPath := OutDir + DirectorySeparator + RelPath + OutFileName;
-
-  ForceDirectories(ExtractFilePath(OutPath));
-  StringToFile(OutPath, Rendered);
-
-  WriteLn('  [BUILD] ', FileName, ' -> ', OutPath);
 end;
 
 procedure BuildSite(const SrcDir, OutDir: string; IsDev: Boolean);

@@ -138,6 +138,19 @@ description: "Uma descrição para SEO"
 Texto em **Markdown** com todos os recursos.
 ```
 
+Você também pode definir variáveis personalizadas no front matter e reutilizá-las no próprio conteúdo e nos templates:
+
+```markdown
+---
+title: "Sobre"
+description: "Página institucional"
+current_date: "10/10/2010"
+author_role: "Fundador"
+---
+
+Publicado em {{current_date}} por {{author_role}}.
+```
+
 ---
 
 ## 🎨 Templates
